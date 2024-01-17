@@ -6,48 +6,61 @@ public class LargeDepositor
     private double savings; 
     private double taxedIncome; 
 
-    int key() 
+    public int key() 
     {
         return AFM;
     }
 
-    String getFirstName() 
+    public String getFirstName() 
     {
         return firstName;
     }
 
-    String getLastName() 
+    public String getLastName() 
     {
         return lastName;
     }
 
-    double getSavings() 
+    public double getSavings() 
     {
         return savings;
     }
     
-    double getTaxedIncome() 
+    public double getTaxedIncome() 
     {
         return taxedIncome;
     }
 
-    void setFirstName(String firstName)
+    public void setAFM(int AFM)
+    {
+        this.AFM = AFM;
+    }
+
+    public void setFirstName(String firstName)
     {
         this.firstName = firstName;
     }
     
-    void setLastName(String lastName)
+    public void setLastName(String lastName)
     {
         this.lastName = lastName;
     }
 
-    void setSavings(double savings)
+    public void setSavings(double savings)
     {
         this.savings = savings;
     }
 
-    void setTaxedIncome(double taxedIncome)
+    public void setTaxedIncome(double taxedIncome)
     {
         this.taxedIncome = taxedIncome;
+    }
+    
+    public String toString()
+    {
+        return "First name: " + firstName + 
+        "\nLast name: " + lastName +
+        "\nSavings: " + savings +
+        "\nTaxed Income: " + taxedIncome;
     }
 }

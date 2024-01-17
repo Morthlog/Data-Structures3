@@ -1,13 +1,12 @@
-import java.util.List;
 public interface TaxEvasionInterface 
 {
-    void insert(LargeDepositor item);
-    void load(String filename);
-    void updateSavings(int AFM, double savings);
-    LargeDepositor searchByAFM(int AFM);
-    List<LargeDepositor> searchByLastName(String last_name);
-    void remove(int AFM);
-    double getMeanSavings();
-    void printTopLargeDepositors(int k);
-    void printByAFM();
+    public void insert(LargeDepositor item);
+    public void load(String filename);
+    public void updateSavings(int AFM, double savings);
+    public LargeDepositor searchByAFM(int AFM);
+    public StringDoubleEndedQueue<LargeDepositor> searchByLastName(String last_name);
+    public void remove(int AFM);
+    public double getMeanSavings();
+    public void printTopLargeDepositors(int k);
+    public void printByAFM();
 }
