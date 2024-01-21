@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
 import java.util.Scanner;
 
 public class RandomizedBST implements TaxEvasionInterface 
@@ -23,13 +22,13 @@ public class RandomizedBST implements TaxEvasionInterface
         else return searchR(h.right, key); 
     }
 
-    private void iterateforName(TreeNode node, String last_name, StringDoubleEndedQueue<LargeDepositor> myList)
+    private void iterateforName(TreeNode node, String last_name, List<LargeDepositor> myList)
     {
         if (node == null)
             return;
         if (node.item.getLastName() == last_name)
         {
-            myList.addLast(node.item);
+            myList.insertAtBack(node.item);
         }
         iterateforName(node.left, last_name, myList);
         iterateforName(node.right, last_name, myList);
@@ -108,9 +107,9 @@ public class RandomizedBST implements TaxEvasionInterface
     }
 
     //TODO make simple list
-    public StringDoubleEndedQueue<LargeDepositor> searchByLastName(String last_name)
+    public List<LargeDepositor> searchByLastName(String last_name)
     {
-        StringDoubleEndedQueue<LargeDepositor> myList = new StringDoubleEndedQueueImpl<LargeDepositor>();
+        List<LargeDepositor> myList = new List<LargeDepositor>();
         iterateforName(root, last_name, myList);
         if (myList.size()>0)
         {
@@ -202,10 +201,10 @@ public class RandomizedBST implements TaxEvasionInterface
             {
                 System.out.println("Last name: ");
                 String name = on.nextLine();
-                StringDoubleEndedQueue<LargeDepositor> myList = symbolTable.searchByLastName(name);
+                List<LargeDepositor> myList = symbolTable.searchByLastName(name);
                 if (myList.size()<=5)
                 {
-                    myList.printQueue(System.out);
+                    System.out.println(myList);
                 }
             }
             else if (option.equals("6"))
