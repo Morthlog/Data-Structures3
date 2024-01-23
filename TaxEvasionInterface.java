@@ -4,7 +4,7 @@ public interface TaxEvasionInterface
     public void load(String filename);
     public void updateSavings(int AFM, double savings);
     public LargeDepositor searchByAFM(int AFM);
-    public StringDoubleEndedQueue<LargeDepositor> searchByLastName(String last_name);
+    public List<LargeDepositor> searchByLastName(String last_name);
     public void remove(int AFM);
     public double getMeanSavings();
     public void printTopLargeDepositors(int k);
