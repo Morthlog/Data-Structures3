@@ -3,7 +3,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
-
 public class RandomizedBST implements TaxEvasionInterface
 {
 	private class TreeNode
@@ -65,64 +64,73 @@ public class RandomizedBST implements TaxEvasionInterface
 
 	public void insert(LargeDepositor item)
 	{
-		TreeNode temp = insertR(item, root);
-		if (temp != null)
-		{
-			root = temp;
-		}
-
+		root = insertR(item, root);	
 	}
 
 	private TreeNode insertAsRoot(LargeDepositor item, TreeNode h)
 	{
 		if (h == null)
-		{			
-			h=  new TreeNode(item);
-//			h.N = count(h.left) + count(h.right) + 1;
+		{
+			h = new TreeNode(item);
+			h.N++;
 			return h;
 		}
-		
+
 		if (item.key() == h.item.key())
 		{
-			System.out.println("Error. Depositor already exists.");
-			return null;
+			System.out.println("Depositor already exists.");
+			return h;
 		}
-
 		else if (item.key() < h.item.key())
 		{
 			// insert into the left subtree and perform a right rotation
 			h.left = insertAsRoot(item, h.left);
 			h = rotateRight(h);
-		} 
+		}
+
 		else
 		{
 			// insert into the right subtree and perform a left rotation
 			h.right = insertAsRoot(item, h.right);
 			h = rotateLeft(h);
 		}
-		h.N++;
-		//h.N = count(h.left) + count(h.right) + 1;
+
+		h.N = count(h.left) + count(h.right) + 1;
 		return h;
 	}
-	
+
 	private TreeNode insertR(LargeDepositor item, TreeNode h)
 	{
-		if (h == null) return new TreeNode(item);
-		if (Math.random()*(h.N+1) < 1.0)
-			return insertAsRoot(item, h);//εισαγωγή στη ρίζα του υποδέντρου
-		if (item.key()<h.item.key())
+		if (h == null)
+		{
+			h = new TreeNode(item);
+			h.N++;
+			return h;
+		}
+		
+		if (Math.random() * (h.N + 1) < 1.0)
+		{
+			return insertAsRoot(item, h);
+		}
+		
+		if (item.key() == h.item.key())
+		{
+			System.out.println("Depositor already exists.");
+			return h;
+		}
+		else if (item.key() < h.item.key())
 		{
 			h.left = insertR(item, h.left);
-		}	
+		} 
 		else
 		{
 			h.right = insertR(item, h.right);
 		}
-		
+
 		h.N++;
-		return h; 
+		return h;
 	}
-	
+
 
 	private TreeNode rotateRight(TreeNode h)
 	{
@@ -208,7 +216,8 @@ public class RandomizedBST implements TaxEvasionInterface
 		if (myList.size() > 0)
 		{
 			return myList;
-		} else
+		} 
+		else
 		{
 			return null;
 		}
@@ -216,7 +225,45 @@ public class RandomizedBST implements TaxEvasionInterface
 
 	public void remove(int AFM)
 	{
+		removeR(root, AFM);
+	}
 
+	private TreeNode joinLR(TreeNode a, TreeNode b)
+	{				 
+		if (a == null)
+			return b;
+		if (b == null)
+			return a;
+		
+		int N = a.N + b.N;
+		if (Math.random() * N < 1.0 * a.N)
+		{
+			a.right = joinLR(a.right, b);
+			return a;
+		} 
+		else
+		{
+			b.left = joinLR(a, b.left);
+			return b;
+		}
+
+	}
+
+	private TreeNode removeR(TreeNode h, int v)
+	{
+		if (h == null)
+			return null;
+		int w = h.item.key();
+		if (v < w)
+			h.left = removeR(h.left, v);
+		else if (w < v)
+			h.right = removeR(h.right, v);
+		else
+			h = joinLR(h.left, h.right);
+//			h.item.setAFM(0);
+			
+		System.out.println(h.item.key());
+		return h;
 	}
 
 	public double getMeanSavings()
@@ -234,29 +281,57 @@ public class RandomizedBST implements TaxEvasionInterface
 		recursiveInOrder(root);
 	}
 
+	static LargeDepositor addNewDepositor(int value)
+	{
+		LargeDepositor tmp = new LargeDepositor();
+		tmp.setAFM(value);
+		return tmp;
+	}
+
+	public  void printTree(TreeNode node, int depth) {
+        if (node == null) {
+            printIndent(depth);
+            System.out.println("null");
+            return;
+        }
+
+        printIndent(depth);
+        System.out.println(node.item.key());
+
+        if (node.left != null || node.right != null) {
+            printIndent(depth);
+            System.out.println("├─ Left:");
+            printTree(node.left, depth + 1);
+
+            printIndent(depth);
+            System.out.println("└─ Right:");
+            printTree(node.right, depth + 1);
+        }
+    }
+
+    private static void printIndent(int depth) {
+        for (int i = 0; i < depth; i++) {
+            System.out.print("    "); // Adjust the number of spaces as needed
+        }
+    }
+
 	public static void main(String args[])
 	{
 		RandomizedBST symbolTable = new RandomizedBST();
-		LargeDepositor tmp = new LargeDepositor();
-		tmp.setAFM(5);
-		symbolTable.insert(tmp);
-		 
-		tmp = new LargeDepositor();
-		tmp.setAFM(2);
-		symbolTable.insert(tmp);
+
+		symbolTable.insert(addNewDepositor(5));
+		symbolTable.insert(addNewDepositor(3));
+		symbolTable.insert(addNewDepositor(4));
+		symbolTable.insert(addNewDepositor(2));
+		symbolTable.insert(addNewDepositor(6));
+		symbolTable.insert(addNewDepositor(1));
+		symbolTable.insert(addNewDepositor(7));
 		
-		tmp = new LargeDepositor();
-		tmp.setAFM(1);
-		symbolTable.insert(tmp);
-		
-		tmp = new LargeDepositor();
-		tmp.setAFM(3);
-		symbolTable.insert(tmp);
-		
-		tmp = new LargeDepositor();
-		tmp.setAFM(4);
-		symbolTable.insert(tmp);
-		System.out.println("Savings: ");
+//		symbolTable.remove(3);
+		symbolTable.printTree(symbolTable.root,0);
+		System.out.println("N= "+symbolTable.root.N);
+		symbolTable.remove(3);
+		symbolTable.printTree(symbolTable.root,0);
 //		RandomizedBST symbolTable = new RandomizedBST();
 //		// For testing purposes
 //
