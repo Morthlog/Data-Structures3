@@ -3,6 +3,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
+import javax.swing.tree.FixedHeightLayoutCache;
+
 public class RandomizedBST implements TaxEvasionInterface
 {
 	private class TreeNode
@@ -15,6 +17,7 @@ public class RandomizedBST implements TaxEvasionInterface
 		public TreeNode(LargeDepositor item)
 		{
 			this.item = item;
+			this.N = 1;
 		}
 	}
 
@@ -64,7 +67,7 @@ public class RandomizedBST implements TaxEvasionInterface
 
 	public void insert(LargeDepositor item)
 	{
-		root = insertR(item, root);	
+		root = insertR(item, root);
 	}
 
 	private TreeNode insertAsRoot(LargeDepositor item, TreeNode h)
@@ -72,7 +75,6 @@ public class RandomizedBST implements TaxEvasionInterface
 		if (h == null)
 		{
 			h = new TreeNode(item);
-			h.N++;
 			return h;
 		}
 
@@ -80,8 +82,7 @@ public class RandomizedBST implements TaxEvasionInterface
 		{
 			System.out.println("Depositor already exists.");
 			return h;
-		}
-		else if (item.key() < h.item.key())
+		} else if (item.key() < h.item.key())
 		{
 			// insert into the left subtree and perform a right rotation
 			h.left = insertAsRoot(item, h.left);
@@ -95,29 +96,30 @@ public class RandomizedBST implements TaxEvasionInterface
 			h = rotateLeft(h);
 		}
 
-		h.N = count(h.left) + count(h.right) + 1;
+		h.N++;
 		return h;
 	}
 
 	private TreeNode insertR(LargeDepositor item, TreeNode h)
 	{
+		// if we reach a leaf's null child, create a new node
 		if (h == null)
 		{
 			h = new TreeNode(item);
-			h.N++;
 			return h;
 		}
-		
+
 		if (Math.random() * (h.N + 1) < 1.0)
 		{
 			return insertAsRoot(item, h);
 		}
-		
+
+		/// search the correct position to put the new node until reaching bottom
 		if (item.key() == h.item.key())
 		{
 			System.out.println("Depositor already exists.");
 			return h;
-		}
+		} 
 		else if (item.key() < h.item.key())
 		{
 			h.left = insertR(item, h.left);
@@ -131,13 +133,16 @@ public class RandomizedBST implements TaxEvasionInterface
 		return h;
 	}
 
-
+//see rotations in pdf DSslides13, slide 13-25 to understand logic of calculating N
 	private TreeNode rotateRight(TreeNode h)
 	{
 		// Right rotation operation
 		TreeNode x = h.left;
+		x.N = h.N;
 		h.left = x.right;
+		h.N = count(h.right) + count(x.right) + 1;
 		x.right = h;
+
 		return x;
 	}
 
@@ -145,8 +150,11 @@ public class RandomizedBST implements TaxEvasionInterface
 	{
 		// Left rotation operation
 		TreeNode x = h.right;
+		x.N = h.N;
 		h.right = x.left;
+		h.N = count(h.left) + count(x.left) + 1;
 		x.left = h;
+
 		return x;
 	}
 
@@ -223,28 +231,18 @@ public class RandomizedBST implements TaxEvasionInterface
 		}
 	}
 
+	// implementation of page 589 in main book
 	public void remove(int AFM)
 	{
-		removeR(root, AFM);
-	}
-
-	private TreeNode joinLR(TreeNode a, TreeNode b)
-	{				 
-		if (a == null)
-			return b;
-		if (b == null)
-			return a;
-		
-		int N = a.N + b.N;
-		if (Math.random() * N < 1.0 * a.N)
+		if (root.item.key() == AFM)
 		{
-			a.right = joinLR(a.right, b);
-			return a;
+			root = removeR(root, AFM);
 		} 
 		else
 		{
-			b.left = joinLR(a, b.left);
-			return b;
+			LargeDepositor searchResult = searchByAFM(AFM);
+			if (searchResult != null)
+				root = removeR(root, AFM);
 		}
 
 	}
@@ -254,16 +252,54 @@ public class RandomizedBST implements TaxEvasionInterface
 		if (h == null)
 			return null;
 		int w = h.item.key();
+
+		// find value 'v' to delete
 		if (v < w)
+		{
 			h.left = removeR(h.left, v);
+			h.N--;// only to reduce size in removeR, not when calling join
+		}
+
 		else if (w < v)
+		{
 			h.right = removeR(h.right, v);
+			h.N--;// only to reduce size in removeR
+		}
+
+		/*
+		 * if found, join it's childrent and 'delete' it by replacing it with the result
+		 * of the join
+		 */
 		else
 			h = joinLR(h.left, h.right);
-//			h.item.setAFM(0);
-			
-		System.out.println(h.item.key());
+
 		return h;
+	}
+
+	private TreeNode joinLR(TreeNode a, TreeNode b)
+	{
+		if (a == null)
+			return b;
+		if (b == null)
+			return a;
+
+		int N = a.N + b.N;
+		// make right child of a, the b nodeTree
+		if (Math.random() * N < 1.0 * a.N)
+		{
+			a.right = joinLR(a.right, b);
+			//fix in each recursion the new treeNode size
+			a.N = a.right.N + 1;//new size is the new right + itself
+			return a;
+		}
+		// make left child of b, the a nodeTree
+		else
+		{
+			b.left = joinLR(a, b.left);
+			b.N = b.left.N + 1;//new size is the new left + itself
+			return b;
+		}
+
 	}
 
 	public double getMeanSavings()
@@ -288,32 +324,37 @@ public class RandomizedBST implements TaxEvasionInterface
 		return tmp;
 	}
 
-	public  void printTree(TreeNode node, int depth) {
-        if (node == null) {
-            printIndent(depth);
-            System.out.println("null");
-            return;
-        }
+	public void printTree(TreeNode node, int depth)
+	{
+		if (node == null)
+		{
+			printIndent(depth);
+			System.out.println("null");
+			return;
+		}
 
-        printIndent(depth);
-        System.out.println(node.item.key());
+		printIndent(depth);
+		System.out.println("Key: " + node.item.key() + ", N: " + node.N);
 
-        if (node.left != null || node.right != null) {
-            printIndent(depth);
-            System.out.println("├─ Left:");
-            printTree(node.left, depth + 1);
+		if (node.left != null || node.right != null)
+		{
+			printIndent(depth);
+			System.out.println("├─ Left:");
+			printTree(node.left, depth + 1);
 
-            printIndent(depth);
-            System.out.println("└─ Right:");
-            printTree(node.right, depth + 1);
-        }
-    }
+			printIndent(depth);
+			System.out.println("└─ Right:");
+			printTree(node.right, depth + 1);
+		}
+	}
 
-    private static void printIndent(int depth) {
-        for (int i = 0; i < depth; i++) {
-            System.out.print("    "); // Adjust the number of spaces as needed
-        }
-    }
+	private static void printIndent(int depth)
+	{
+		for (int i = 0; i < depth; i++)
+		{
+			System.out.print("    "); // Adjust the number of spaces as needed
+		}
+	}
 
 	public static void main(String args[])
 	{
@@ -326,12 +367,12 @@ public class RandomizedBST implements TaxEvasionInterface
 		symbolTable.insert(addNewDepositor(6));
 		symbolTable.insert(addNewDepositor(1));
 		symbolTable.insert(addNewDepositor(7));
-		
+
 //		symbolTable.remove(3);
-		symbolTable.printTree(symbolTable.root,0);
-		System.out.println("N= "+symbolTable.root.N);
+		symbolTable.printTree(symbolTable.root, 0);
+//		System.out.println("N= " + symbolTable.root.N);
 		symbolTable.remove(3);
-		symbolTable.printTree(symbolTable.root,0);
+		symbolTable.printTree(symbolTable.root, 0);
 //		RandomizedBST symbolTable = new RandomizedBST();
 //		// For testing purposes
 //
