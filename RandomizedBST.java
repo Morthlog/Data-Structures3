@@ -19,7 +19,20 @@ public class RandomizedBST implements TaxEvasionInterface
 		}
 	}
 
+
 	private TreeNode root;
+
+    private void iterateforName(TreeNode node, String last_name, List<LargeDepositor> myList)
+    {
+        if (node == null)
+            return;
+        if (node.item.getLastName().equals(last_name))
+        {
+            myList.insertAtBack(node.item);
+        }
+        iterateforName(node.left, last_name, myList);
+        iterateforName(node.right, last_name, myList);
+    }
 
 	private LargeDepositor searchR(TreeNode h, int key)
 	{
@@ -33,17 +46,6 @@ public class RandomizedBST implements TaxEvasionInterface
 			return searchR(h.right, key);
 	}
 
-	private void iterateforName(TreeNode node, String last_name, List<LargeDepositor> myList)
-	{
-		if (node == null)
-			return;
-		if (node.item.getLastName() == last_name)
-		{
-			myList.insertAtBack(node.item);
-		}
-		iterateforName(node.left, last_name, myList);
-		iterateforName(node.right, last_name, myList);
-	}
 
 	private void recursiveInOrder(TreeNode node)
 	{
@@ -156,6 +158,7 @@ public class RandomizedBST implements TaxEvasionInterface
 
 		return x;
 	}
+             
 
 	public void load(String filename)
 	{
@@ -384,79 +387,97 @@ public class RandomizedBST implements TaxEvasionInterface
 				tmp.setTaxedIncome(Double.parseDouble(on.nextLine()));
 
 				symbolTable.insert(tmp);
-			} else if (option.equals("2"))
-			{
-				System.out.println("File name: ");
-				symbolTable.load(on.nextLine());
-			} else if (option.equals("3"))
-			{
-				System.out.println("AFM: ");
-				int afm = Integer.parseInt(on.nextLine());
-				System.out.println("Updated savings: ");
-				double savings = Double.parseDouble(on.nextLine());
-				symbolTable.updateSavings(afm, savings);
-			} else if (option.equals("4"))
-			{
-				System.out.println("AFM: ");
-				int afm = Integer.parseInt(on.nextLine());
-				LargeDepositor result = symbolTable.searchByAFM(afm);
-				if (result != null)
+            }
+            else if (option.equals("2"))
+            {
+                System.out.println("File name: ");
+                symbolTable.load(on.nextLine());
+            }
+            else if (option.equals("3"))
+            {
+                System.out.println("AFM: ");
+                int afm = Integer.parseInt(on.nextLine());
+                System.out.println("Updated savings: ");
+                double savings = Double.parseDouble(on.nextLine());
+                symbolTable.updateSavings(afm, savings);
+            }
+            else if (option.equals("4"))
+            {
+                System.out.println("AFM: ");
+                int afm = Integer.parseInt(on.nextLine());
+                LargeDepositor result = symbolTable.searchByAFM(afm);
+                if (result!= null)
+                {
+                    System.out.println("Large Depositor's data: \n" + result);
+                }
+                else
+                {
+                    System.out.println("AFM was not found");
+                }
+            }
+            else if (option.equals("5"))
+            {
+                System.out.println("Last name: ");
+                String name = on.nextLine();
+                List<LargeDepositor> myList = symbolTable.searchByLastName(name);
+				if (myList!=null)
 				{
-					System.out.println("Large Depositor's data: \n" + result);
-				} else
-				{
-					System.out.println("AFM was not found");
+					if (myList.size()<=5)
+					{
+						System.out.println(myList);
+					}
 				}
-			} else if (option.equals("5"))
-			{
-				System.out.println("Last name: ");
-				String name = on.nextLine();
-				List<LargeDepositor> myList = symbolTable.searchByLastName(name);
-				if (myList.size() <= 5)
+                else
 				{
-					System.out.println(myList);
+					System.out.println("Last name was not found");
 				}
-			} else if (option.equals("6"))
-			{
-				System.out.println("AFM: ");
-				int afm = Integer.parseInt(on.nextLine());
-				symbolTable.remove(afm);
-			} else if (option.equals("7"))
-			{
-				System.out.println("Mean savings: " + symbolTable.getMeanSavings());
-			} else if (option.equals("8"))
-			{
-				System.out.println("top k Large Depositors: ");
-				int k = Integer.parseInt(on.nextLine());
-				symbolTable.printTopLargeDepositors(k);
-			} else if (option.equals("9"))
-			{
-				symbolTable.printByAFM();
-			} else if (option.equals("0"))
-			{
-				System.out.println("Exiting program...");
-				break;
-			} else
-			{
-				System.out.println("The option was not recognised from the system, try once more");
-			}
-		}
+            }
+            else if (option.equals("6"))
+            {
+                System.out.println("AFM: ");
+                int afm = Integer.parseInt(on.nextLine());
+                symbolTable.remove(afm);
+            }
+            else if (option.equals("7"))
+            {
+                System.out.println("Mean savings: " + symbolTable.getMeanSavings());
+            }
+            else if (option.equals("8"))
+            {
+                System.out.println("top k Large Depositors: ");
+                int k = Integer.parseInt(on.nextLine());
+                symbolTable.printTopLargeDepositors(k);
+            }
+            else if (option.equals("9"))
+            {
+                symbolTable.printByAFM();
+            }
+            else if (option.equals("0"))
+            {
+                System.out.println("Exiting program...");
+                break;
+            }
+            else{
+                System.out.println("The option was not recognised from the system, try once more");
+            }    
+        }
 
 		on.close();
 	}
 
-	public static void printMenu()
-	{
-		System.out.println("What would you like to do?");
-		System.out.println("1. Insert a new Large Depositor");
-		System.out.println("2. Load Large Depositor from file");
-		System.out.println("3. Update savings of a Large Depositor");
-		System.out.println("4. Find Large Depositor by AFM");
-		System.out.println("5. Find Large Depositor by Last name");
-		System.out.println("6. Remove Large Depositor by AFM");
-		System.out.println("7. Get savings' average");
-		System.out.println("8. Get top k Large Depositors");
-		System.out.println("9. Print Large Depositors in ascending order");
-		System.out.println("0. Exit");
-	}
+    public static void printMenu()
+    {
+        System.out.println("\nWhat would you like to do?");
+        System.out.println("1. Insert a new Large Depositor");
+        System.out.println("2. Load Large Depositor from file");
+        System.out.println("3. Update savings of a Large Depositor");
+        System.out.println("4. Find Large Depositor by AFM");
+        System.out.println("5. Find Large Depositor by Last name");
+        System.out.println("6. Remove Large Depositor by AFM");
+        System.out.println("7. Get savings' average");
+        System.out.println("8. Get top k Large Depositors");
+        System.out.println("9. Print Large Depositors in ascending order");
+        System.out.println("0. Exit");
+    }
+
 }
