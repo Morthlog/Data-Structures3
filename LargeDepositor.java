@@ -58,7 +58,8 @@ public class LargeDepositor implements  Comparable
     
     public String toString()
     {
-        return "First name: " + firstName + 
+        return "AFM: " + AFM +
+        "\nFirst name: " + firstName + 
         "\nLast name: " + lastName +
         "\nSavings: " + savings +
         "\nTaxed Income: " + taxedIncome;

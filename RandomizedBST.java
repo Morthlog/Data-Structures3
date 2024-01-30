@@ -53,7 +53,7 @@ public class RandomizedBST implements TaxEvasionInterface
 			return;
 
 		recursiveInOrder(node.left);
-		System.out.println(node.item + "\n");
+		System.out.println("\n" + node.item);
 		recursiveInOrder(node.right);
 	}
 
@@ -203,8 +203,7 @@ public class RandomizedBST implements TaxEvasionInterface
 		} 
 		catch (IOException e)
 		{
-			System.out.println("Error reading file...\nThe program will now exit");
-			System.exit(0);
+			System.out.println("Error reading file...");
 		}
 	}
 
@@ -220,7 +219,6 @@ public class RandomizedBST implements TaxEvasionInterface
 		return searchR(root, AFM);
 	}
 
-	// TODO make simple list
 	public List<LargeDepositor> searchByLastName(String last_name)
 	{
 		List<LargeDepositor> myList = new List<LargeDepositor>();
@@ -333,7 +331,8 @@ public class RandomizedBST implements TaxEvasionInterface
 		for (int i = 0; i < k; i++)
 		{
 			LargeDepositor pqElement= topLargeDepositorsPQ.getHead();	
-			System.out.println(pqElement.key());				
+			System.out.println("\n" + i + ": " + pqElement);
+			System.out.println("------------------------------");			
 		}
 	}
 	
@@ -361,16 +360,12 @@ public class RandomizedBST implements TaxEvasionInterface
 	public static void main(String args[]) throws Exception
 	{
 		RandomizedBST symbolTable = new RandomizedBST();
-		// For testing purposes
-
-		symbolTable.load("Data.txt");
-		symbolTable.printByAFM();
 		Scanner on = new Scanner(System.in);
 		String option;
 		while (true)
 		{
 			printMenu();
-
+			System.out.print("Option: ");
 			option = on.nextLine();
 			if (option.equals("1"))
 			{
@@ -422,6 +417,7 @@ public class RandomizedBST implements TaxEvasionInterface
                 List<LargeDepositor> myList = symbolTable.searchByLastName(name);
 				if (myList!=null)
 				{
+					System.out.println("Large Depositor with specified last name were succesfully found!\n");
 					if (myList.size()<=5)
 					{
 						System.out.println(myList);
@@ -444,7 +440,7 @@ public class RandomizedBST implements TaxEvasionInterface
             }
             else if (option.equals("8"))
             {
-                System.out.println("top k Large Depositors: ");
+                System.out.print("top k Large Depositors: ");
                 int k = Integer.parseInt(on.nextLine());
                 symbolTable.printTopLargeDepositors(k);
             }
@@ -457,7 +453,8 @@ public class RandomizedBST implements TaxEvasionInterface
                 System.out.println("Exiting program...");
                 break;
             }
-            else{
+            else
+			{
                 System.out.println("The option was not recognised from the system, try once more");
             }    
         }
