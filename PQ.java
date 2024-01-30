@@ -1,5 +1,3 @@
-
-
 public class PQ
 {
 	private LargeDepositor[] heap; // the heap to store data in
@@ -45,7 +43,7 @@ public class PQ
 	 * @param largeDepositor
 	 */
 	public void insert(LargeDepositor largeDepositor)
-	{ // System.out.println((int) item);
+	{ 
 		// Check available space
 		if (size == Math.round(0.75 * (heap.length - 1)))
 			grow();

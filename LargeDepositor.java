@@ -1,6 +1,4 @@
-import java.util.Comparator;
-
-public class LargeDepositor implements  Comparator<LargeDepositor>,Comparable
+public class LargeDepositor implements  Comparable
 {
     private int AFM; 
     private String firstName; 
@@ -92,40 +90,4 @@ public class LargeDepositor implements  Comparator<LargeDepositor>,Comparable
 		else return false;
 		
 	}
-
-
-	@Override
-	public int compare(LargeDepositor o1, LargeDepositor o2)
-	{
-		if(o1.getTaxedIncome()<8000 && o2.getTaxedIncome()<8000)
-		{
-			//for consistent results
-			if(o1.getSavings() - o1.getTaxedIncome() < o2.getSavings() - o2.getTaxedIncome())
-			{
-				return 1;
-			}
-			else return -1;
-		}
-		else if(o1.getTaxedIncome()<8000 && o2.getTaxedIncome()>8000)
-		{
-			return -1;
-		}
-		
-		else if (o1.getTaxedIncome()>8000 && o2.getTaxedIncome()<8000) 
-		{
-			return 1;
-		}
-		//the result ranges from negative numbers(when taxed>savings) least suspect, to positive most suspect
-		else if(o1.getSavings() - o1.getTaxedIncome() < o2.getSavings() - o2.getTaxedIncome())
-			return 1;
-		else return -1;
-	}
-//	public int compare(LargeDepositor o1, LargeDepositor o2)
-//	{
-//
-//		if(o1.getSavings() - o1.getTaxedIncome() < o2.getSavings() - o2.getTaxedIncome())
-//			return 1;
-//		else return -1;
-//
-//	}
 }

@@ -1,13 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 
 public class RandomizedBST implements TaxEvasionInterface
 {
@@ -86,7 +80,8 @@ public class RandomizedBST implements TaxEvasionInterface
 		{
 			System.out.println("Depositor already exists.");
 			return h;
-		} else if (item.key() < h.item.key())
+		} 
+		else if (item.key() < h.item.key())
 		{
 			// insert into the left subtree and perform a right rotation
 			h.left = insertAsRoot(item, h.left);
@@ -123,10 +118,12 @@ public class RandomizedBST implements TaxEvasionInterface
 		{
 			System.out.println("Depositor already exists.");
 			return h;
-		} else if (item.key() < h.item.key())
+		} 
+		else if (item.key() < h.item.key())
 		{
 			h.left = insertR(item, h.left);
-		} else
+		} 
+		else
 		{
 			h.right = insertR(item, h.right);
 		}
@@ -181,7 +178,8 @@ public class RandomizedBST implements TaxEvasionInterface
 					if (index >= 0)
 					{
 						data = line.substring(0, index);
-					} else
+					} 
+					else
 					{
 						data = line;
 						index = line.length();
@@ -199,7 +197,8 @@ public class RandomizedBST implements TaxEvasionInterface
 			}
 			System.out.println("All data were read succesfully");
 			reader.close();
-		} catch (IOException e)
+		} 
+		catch (IOException e)
 		{
 			System.out.println("Error reading file...\nThe program will now exit");
 			System.exit(0);
@@ -250,7 +249,6 @@ public class RandomizedBST implements TaxEvasionInterface
 				System.out.println("not found");
 			}
 		}
-
 	}
 
 	private TreeNode removeR(TreeNode h, int v)
@@ -305,318 +303,146 @@ public class RandomizedBST implements TaxEvasionInterface
 			b.N = count(b.right)+count(b.left)+1;
 			return b;
 		}
-
 	}
 
 	public double getMeanSavings()
 	{
 		if(root==null) return 0;
-		return addSavings(root) / root.N;
+		return addSavingsR(root) / root.N;
 	}
 
-	double addSavings(TreeNode h)
+	double addSavingsR(TreeNode h)
 
 	{
 		if (h == null)
 			return 0;
-		double sum = addSavings(h.left);
+		double sum = addSavingsR(h.left);
 		sum += h.item.getSavings();
-		sum += addSavings(h.right);
+		sum += addSavingsR(h.right);
 		return sum;
 	}
-	
-	ArrayList<LargeDepositor> depositors= new ArrayList<LargeDepositor>();
-	
-	public void printTopLargeDepositors(int k) throws Exception
+		
+	public void printTopLargeDepositors(int k)
 	{
 		PQ topLargeDepositorsPQ = new PQ(k, PQ.Type.MIN);
-		iterateforItem(root, topLargeDepositorsPQ, k);
+		createMinHeapR(root, topLargeDepositorsPQ, k);
 	
-		int size=depositors.size()-1;
-		System.out.println(depositors.size());
 		for (int i = 0; i < k; i++)
 		{
 			LargeDepositor pqElement= topLargeDepositorsPQ.getHead();	
-			LargeDepositor listElement=depositors.get(size-i);
-			System.out.println(pqElement.key()+" "+listElement.key());
-			if(pqElement.key()!=listElement.key())
-			{
-				throw new Exception("gamietai i print");
-			}
-			System.out.println("taxed= "+(int) listElement.getTaxedIncome()+" "+(int) (listElement.getSavings() - listElement.getTaxedIncome())+" java list");	
-			System.out.println("taxed= "+(int) pqElement.getTaxedIncome()+" "+(int) (pqElement.getSavings() - pqElement.getTaxedIncome())+" PQ list");	
-			
+			System.out.println(pqElement.key());				
 		}
 	}
 	
-	private void iterateforItem(TreeNode node,  PQ pq, int k)
+	private void createMinHeapR(TreeNode node,  PQ pq, int k)
 	{
 		if (node == null)
 			return;
-		
+	
 		pq.insert(node.item);
-		depositors.add(node.item);
-		//prosoxi otan to k einai iso me to symbolTable size. Einai logiko na min einai idia i print, epeidh den mpainei na kanei sort
+		//removes min element
 		if(pq.size()>k)
 		{
 			pq.getHead();
-			LargeDepositor comparator = new LargeDepositor();
-			//sorts from max to min. Index 0 = max, last index = min
-			Collections.sort(depositors, comparator); 
-			depositors.remove(depositors.size()-1);
 		}
 	
-		iterateforItem(node.left, pq, k);
-		iterateforItem(node.right, pq, k);
+		createMinHeapR(node.left, pq, k);
+		createMinHeapR(node.right, pq, k);
 	}
 	
 	public void printByAFM()
 	{
 		recursiveInOrder(root);
 	}
-
-	public  ArrayList<LargeDepositor> generateRandomDepositors()
-	{
-		ArrayList<LargeDepositor> depositors = new ArrayList<LargeDepositor>();
-		Set<Integer> usedAFMs = new HashSet<>();
-
-		Random random = new Random();
-
-		for (int i = 0; i < 20; i++)
-		{
-			LargeDepositor depositor = new LargeDepositor();
-			
-			int afm;
-			do
-			{
-				afm = random.nextInt(1000000000); 
-			} 
-			while (usedAFMs.contains(afm));
-
-			depositor.setAFM(afm);
-			usedAFMs.add(afm);
-
-			// Generate random values for other attributes
-			depositor.setFirstName("FirstName" + i);
-			depositor.setLastName("LastName" + i);
-			depositor.setSavings(random.nextDouble() * 1000); 
-			depositor.setTaxedIncome(/*random.nextDouble() * 10000*/5000); 
-			depositors.add(depositor);
-		}
-
-		return depositors;
-	}
-
-	///helper methods
-	static LargeDepositor addNewDepositor(int value)
-	{
-		LargeDepositor tmp = new LargeDepositor();
-		tmp.setSavings(10);
-		tmp.setAFM(value);
-		return tmp;
-	}
-
-	public void printTree(TreeNode node, int depth)
-	{
-		if (node == null)
-		{
-			printIndent(depth);
-			System.out.println("null");
-			return;
-		}
-
-		printIndent(depth);
-		//System.out.println("Key: " + node.item.key() + ", N: " + node.N);
-		System.out.println("AFM: "+ node.item.key()+", Taxed income: " + node.item.getTaxedIncome() + ", difference: " + (node.item.getSavings() - node.item.getTaxedIncome()));
-		if (node.left != null || node.right != null)
-		{
-			printIndent(depth);
-			System.out.println("├─ Left:");
-			printTree(node.left, depth + 1);
-
-			printIndent(depth);
-			System.out.println("└─ Right:");
-			printTree(node.right, depth + 1);
-		}
-	}
-
-	private static void printIndent(int depth)
-	{
-		for (int i = 0; i < depth; i++)
-		{
-			System.out.print("    "); // Adjust the number of spaces as needed
-		}
-	}
-
-	public int verifyCount(TreeNode node) throws Exception 
-	{
-	    if (node == null) 
-	    {
-	        return 0; // Base case: if the node is null, there are no nodes to count
-	    }
-
-	    // Recursively count nodes in the left and right subtrees
-	    int leftCount = verifyCount(node.left);
-	    int rightCount = verifyCount(node.right);
-	    
-	    if(node.left!=null)
-	    {
-	    	if(leftCount!=node.left.N)
-		    {
-		    	throw new Exception("left child");
-		    }
-		    else 
-		    {
-//		    	System.out.println("leftCount= "+leftCount+", node.left.N= "+ node.left.N );
-			}
-	    }
-	    
-	    
-	    if(node.right!=null)
-	    {
-	    	if(rightCount!=node.right.N)
-		    {
-		    	throw new Exception("right child");
-		    }
-		    else {
-//		    	System.out.println("rightCount= "+rightCount+", node.right.N= "+ node.right.N );
-			}
-	    }
-	    
-	    // Return the total count, including the current node
-	    int parentCount=leftCount + rightCount + 1;
-	    if(parentCount!=node.N)
-	    {
-	    	throw new Exception("parent");
-	    }
-	    else {
-//	    	System.out.println("parentCount= "+parentCount+", nodeN= "+ node.N );
-		}
-	    
-	    return parentCount;
-	}
-
 	
 	public static void main(String args[]) throws Exception
 	{
-		
-		Random random = new Random();        
-        for(int i=0; i<=10;i++)
-        {
-        	RandomizedBST symbolTable = new RandomizedBST();
+		RandomizedBST symbolTable = new RandomizedBST();
+		// For testing purposes
 
-    		ArrayList<LargeDepositor> randomDepositors = symbolTable.generateRandomDepositors();
-    		for (LargeDepositor depositor : randomDepositors) 
-            {
-            	symbolTable.insert(depositor);
-            }
-    		
-    		 LargeDepositor[] depositorArray = randomDepositors.toArray(new LargeDepositor[randomDepositors.size()]);
-   
-//    		 System.out.println("\nBEFORE: ");
-//    		 symbolTable.printTree(symbolTable.root, 0);
-    		
-    		 symbolTable.remove(symbolTable.root.item.key());
-    		 symbolTable.remove(depositorArray[random.nextInt(randomDepositors.size())].key());
-    		 symbolTable.remove(depositorArray[random.nextInt(randomDepositors.size())].key());
-    		 symbolTable.remove(symbolTable.root.item.key());
-    		 
-//    		 System.out.println("\nAFTER");
-    		 symbolTable.printTree(symbolTable.root, 0);
-    
-    		 
-    		 //symbolTable.verifyCount(symbolTable.root);   
-    		 symbolTable.printTopLargeDepositors(5);
-        }
-        System.out.println("completed");
-        
-		
-//		RandomizedBST symbolTable = new RandomizedBST();
-//		// For testing purposes
-//
-//		symbolTable.load("Data.txt");
-//		symbolTable.printByAFM();
-//		Scanner on = new Scanner(System.in);
-//		String option;
-//		while (true)
-//		{
-//			printMenu();
-//
-//			option = on.nextLine();
-//			if (option.equals("1"))
-//			{
-//				LargeDepositor tmp = new LargeDepositor();
-//				System.out.println("AFM: ");
-//				tmp.setAFM(Integer.parseInt(on.nextLine()));
-//				System.out.println("First name: ");
-//				tmp.setFirstName(on.nextLine());
-//				System.out.println("Last name: ");
-//				tmp.setLastName(on.nextLine());
-//				System.out.println("Savings: ");
-//				tmp.setSavings(Double.parseDouble(on.nextLine()));
-//				System.out.println("Taxed income: ");
-//				tmp.setTaxedIncome(Double.parseDouble(on.nextLine()));
-//
-//				symbolTable.insert(tmp);
-//			} else if (option.equals("2"))
-//			{
-//				System.out.println("File name: ");
-//				symbolTable.load(on.nextLine());
-//			} else if (option.equals("3"))
-//			{
-//				System.out.println("AFM: ");
-//				int afm = Integer.parseInt(on.nextLine());
-//				System.out.println("Updated savings: ");
-//				double savings = Double.parseDouble(on.nextLine());
-//				symbolTable.updateSavings(afm, savings);
-//			} else if (option.equals("4"))
-//			{
-//				System.out.println("AFM: ");
-//				int afm = Integer.parseInt(on.nextLine());
-//				LargeDepositor result = symbolTable.searchByAFM(afm);
-//				if (result != null)
-//				{
-//					System.out.println("Large Depositor's data: \n" + result);
-//				} else
-//				{
-//					System.out.println("AFM was not found");
-//				}
-//			} else if (option.equals("5"))
-//			{
-//				System.out.println("Last name: ");
-//				String name = on.nextLine();
-//				List<LargeDepositor> myList = symbolTable.searchByLastName(name);
-//				if (myList.size() <= 5)
-//				{
-//					System.out.println(myList);
-//				}
-//			} else if (option.equals("6"))
-//			{
-//				System.out.println("AFM: ");
-//				int afm = Integer.parseInt(on.nextLine());
-//				symbolTable.remove(afm);
-//			} else if (option.equals("7"))
-//			{
-//				System.out.println("Mean savings: " + symbolTable.getMeanSavings());
-//			} else if (option.equals("8"))
-//			{
-//				System.out.println("top k Large Depositors: ");
-//				int k = Integer.parseInt(on.nextLine());
-//				symbolTable.printTopLargeDepositors(k);
-//			} else if (option.equals("9"))
-//			{
-//				symbolTable.printByAFM();
-//			} else if (option.equals("0"))
-//			{
-//				System.out.println("Exiting program...");
-//				break;
-//			} else
-//			{
-//				System.out.println("The option was not recognised from the system, try once more");
-//			}
-//		}
-//
-//		on.close();
+		symbolTable.load("Data.txt");
+		symbolTable.printByAFM();
+		Scanner on = new Scanner(System.in);
+		String option;
+		while (true)
+		{
+			printMenu();
+
+			option = on.nextLine();
+			if (option.equals("1"))
+			{
+				LargeDepositor tmp = new LargeDepositor();
+				System.out.println("AFM: ");
+				tmp.setAFM(Integer.parseInt(on.nextLine()));
+				System.out.println("First name: ");
+				tmp.setFirstName(on.nextLine());
+				System.out.println("Last name: ");
+				tmp.setLastName(on.nextLine());
+				System.out.println("Savings: ");
+				tmp.setSavings(Double.parseDouble(on.nextLine()));
+				System.out.println("Taxed income: ");
+				tmp.setTaxedIncome(Double.parseDouble(on.nextLine()));
+
+				symbolTable.insert(tmp);
+			} else if (option.equals("2"))
+			{
+				System.out.println("File name: ");
+				symbolTable.load(on.nextLine());
+			} else if (option.equals("3"))
+			{
+				System.out.println("AFM: ");
+				int afm = Integer.parseInt(on.nextLine());
+				System.out.println("Updated savings: ");
+				double savings = Double.parseDouble(on.nextLine());
+				symbolTable.updateSavings(afm, savings);
+			} else if (option.equals("4"))
+			{
+				System.out.println("AFM: ");
+				int afm = Integer.parseInt(on.nextLine());
+				LargeDepositor result = symbolTable.searchByAFM(afm);
+				if (result != null)
+				{
+					System.out.println("Large Depositor's data: \n" + result);
+				} else
+				{
+					System.out.println("AFM was not found");
+				}
+			} else if (option.equals("5"))
+			{
+				System.out.println("Last name: ");
+				String name = on.nextLine();
+				List<LargeDepositor> myList = symbolTable.searchByLastName(name);
+				if (myList.size() <= 5)
+				{
+					System.out.println(myList);
+				}
+			} else if (option.equals("6"))
+			{
+				System.out.println("AFM: ");
+				int afm = Integer.parseInt(on.nextLine());
+				symbolTable.remove(afm);
+			} else if (option.equals("7"))
+			{
+				System.out.println("Mean savings: " + symbolTable.getMeanSavings());
+			} else if (option.equals("8"))
+			{
+				System.out.println("top k Large Depositors: ");
+				int k = Integer.parseInt(on.nextLine());
+				symbolTable.printTopLargeDepositors(k);
+			} else if (option.equals("9"))
+			{
+				symbolTable.printByAFM();
+			} else if (option.equals("0"))
+			{
+				System.out.println("Exiting program...");
+				break;
+			} else
+			{
+				System.out.println("The option was not recognised from the system, try once more");
+			}
+		}
+
+		on.close();
 	}
 
 	public static void printMenu()
