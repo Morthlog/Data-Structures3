@@ -3,24 +3,24 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
-public class RandomizedBST implements TaxEvasionInterface 
+public class RandomizedBST implements TaxEvasionInterface
 {
-    private class TreeNode {
-        LargeDepositor item;
-        TreeNode left; // pointer to left subtree
-        TreeNode right; // pointer to right subtree
-        int N; //number of nodes in the subtree rooted at this TreeNode
-    }
-    
-    private TreeNode root;
+	private class TreeNode
+	{
+		LargeDepositor item;
+		TreeNode left; // pointer to left subtree
+		TreeNode right; // pointer to right subtree
+		int N; // number of nodes in the subtree rooted at this TreeNode
 
-    private LargeDepositor searchR(TreeNode h, int key) 
-    {
-        if (h == null) return null;
-        if (key == h.item.key()) return h.item;
-        if (key < h.item.key()) return searchR(h.left, key);
-        else return searchR(h.right, key); 
-    }
+		public TreeNode(LargeDepositor item)
+		{
+			this.item = item;
+			this.N = 1;
+		}
+	}
+
+
+	private TreeNode root;
 
     private void iterateforName(TreeNode node, String last_name, List<LargeDepositor> myList)
     {
@@ -34,141 +34,359 @@ public class RandomizedBST implements TaxEvasionInterface
         iterateforName(node.right, last_name, myList);
     }
 
-    private void recursiveInOrder(TreeNode node) {
-        if (node == null)
-            return;
+	private LargeDepositor searchR(TreeNode h, int key)
+	{
+		if (h == null)
+			return null;
+		if (key == h.item.key())
+			return h.item;
+		if (key < h.item.key())
+			return searchR(h.left, key);
+		else
+			return searchR(h.right, key);
+	}
 
-        recursiveInOrder(node.left);
-        System.out.println(node.item + "\n");
-        recursiveInOrder(node.right);
-    }
 
-    public void insert(LargeDepositor item)
-    {
+	private void recursiveInOrder(TreeNode node)
+	{
+		if (node == null)
+			return;
 
-    }
+		recursiveInOrder(node.left);
+		System.out.println(node.item + "\n");
+		recursiveInOrder(node.right);
+	}
 
-    public void load(String filename)
-    {
-        String line, data = "";
-        BufferedReader reader;
-        LargeDepositor tmpObj;
-        int index;
-        StringDoubleEndedQueue<String> ObjCharacteristics = new StringDoubleEndedQueueImpl<String>();
-        try
-        {
-            reader = new BufferedReader(new FileReader(filename));
-            System.out.println("Reading cities' data from file...");
-            line = reader.readLine();
-            while (line != null)
-            {
-                tmpObj = new LargeDepositor();
-                while (line != "")  // put each word in each own node
-                {
-                    index = line.indexOf(" ");
-                    if (index >= 0)
-                    {
-                        data = line.substring(0, index);
-                    }
-                    else
-                    {
-                        data = line;
-                        index = line.length();
-                    }
-                    ObjCharacteristics.addLast(data);
-                    line = line.substring(index).trim();
-                }
-                tmpObj.setAFM(Integer.parseInt(ObjCharacteristics.removeFirst()));
-                tmpObj.setFirstName(ObjCharacteristics.removeFirst());
-                tmpObj.setLastName(ObjCharacteristics.removeFirst());
-                tmpObj.setSavings(Double.parseDouble(ObjCharacteristics.removeFirst()));
-                tmpObj.setTaxedIncome(Double.parseDouble(ObjCharacteristics.removeFirst()));
-                insert(tmpObj); 
-                line = reader.readLine();
-            }
-            System.out.println("All data were read succesfully");
-            reader.close();
-        }
-        catch (IOException e) 
-        {
-            System.out.println	("Error reading file...\nThe program will now exit");
-            System.exit(0);
-        }
-    }
+	private int count(TreeNode h)
+	{
+		if (h == null)
+			return 0;
 
-    public void updateSavings(int AFM, double savings)
-    {
+		return h.N;
+	}
 
-    }
+	public void insert(LargeDepositor item)
+	{
+		root = insertR(item, root);
+	}
 
-    public LargeDepositor searchByAFM(int AFM)
-    {
-        return searchR(root, AFM);
-    }
+	private TreeNode insertAsRoot(LargeDepositor item, TreeNode h)
+	{
+		if (h == null)
+		{
+			h = new TreeNode(item);
+			return h;
+		}
 
-    //TODO make simple list
-    public List<LargeDepositor> searchByLastName(String last_name)
-    {
-        List<LargeDepositor> myList = new List<LargeDepositor>();
-        iterateforName(root, last_name, myList);
-        if (myList.size()>0)
-        {
-            return myList;
-        }
-        else
-        {
-            return null;
-        }
-    }
+		if (item.key() == h.item.key())
+		{
+			System.out.println("Depositor already exists.");
+			return h;
+		} 
+		else if (item.key() < h.item.key())
+		{
+			// insert into the left subtree and perform a right rotation
+			h.left = insertAsRoot(item, h.left);
+			h = rotateRight(h);
+		}
 
-    public void remove(int AFM)
-    {
+		else
+		{
+			// insert into the right subtree and perform a left rotation
+			h.right = insertAsRoot(item, h.right);
+			h = rotateLeft(h);
+		}
 
-    }
+		h.N++;
+		return h;
+	}
 
-    public double getMeanSavings()
-    {
-        return 0;
-    }
+	private TreeNode insertR(LargeDepositor item, TreeNode h)
+	{
+		// if we reach a leaf's null child, create a new node
+		if (h == null)
+		{
+			h = new TreeNode(item);
+			return h;
+		}
 
-    public void printTopLargeDepositors(int k)
-    {
+		if (Math.random() * (h.N + 1) < 1.0)
+		{
+			return insertAsRoot(item, h);
+		}
 
-    }
+		/// search the correct position to put the new node until reaching bottom
+		if (item.key() == h.item.key())
+		{
+			System.out.println("Depositor already exists.");
+			return h;
+		} 
+		else if (item.key() < h.item.key())
+		{
+			h.left = insertR(item, h.left);
+		} 
+		else
+		{
+			h.right = insertR(item, h.right);
+		}
 
-    public void printByAFM()
-    {
-        recursiveInOrder(root);
-    }
+		h.N++;
+		return h;
+	}
 
-    public static void main(String args[])
-    {
-        RandomizedBST symbolTable = new RandomizedBST();
-        // For testing purposes
+//see rotations in pdf DSslides13, slide 13-25 to understand logic of calculating N
+	private TreeNode rotateRight(TreeNode h)
+	{
+		// Right rotation operation
+		TreeNode x = h.left;
+		x.N = h.N;
+		h.left = x.right;
+		h.N = count(h.right) + count(x.right) + 1;
+		x.right = h;
 
-        symbolTable.load("Data.txt");
-        symbolTable.printByAFM();
-        Scanner on = new Scanner(System.in);
-        String option;
-        while (true){
-            printMenu();
+		return x;
+	}
 
-            option = on.nextLine();
-            if (option.equals("1"))
-            {
-                LargeDepositor tmp = new LargeDepositor();
-                System.out.println("AFM: ");
-                tmp.setAFM(Integer.parseInt(on.nextLine()));
-                System.out.println("First name: ");
-                tmp.setFirstName(on.nextLine());
-                System.out.println("Last name: ");
-                tmp.setLastName(on.nextLine());
-                System.out.println("Savings: ");
-                tmp.setSavings(Double.parseDouble(on.nextLine()));
-                System.out.println("Taxed income: ");
-                tmp.setTaxedIncome(Double.parseDouble(on.nextLine()));
+	private TreeNode rotateLeft(TreeNode h)
+	{
+		// Left rotation operation
+		TreeNode x = h.right;
+		x.N = h.N;
+		h.right = x.left;
+		h.N = count(h.left) + count(x.left) + 1;
+		x.left = h;
 
-                symbolTable.insert(tmp);
+		return x;
+	}
+             
+
+	public void load(String filename)
+	{
+		String line, data = "";
+		BufferedReader reader;
+		LargeDepositor tmpObj;
+		int index;
+		StringDoubleEndedQueue<String> ObjCharacteristics = new StringDoubleEndedQueueImpl<String>();
+		try
+		{
+			reader = new BufferedReader(new FileReader(filename));
+			System.out.println("Reading cities' data from file...");
+			line = reader.readLine();
+			while (line != null)
+			{
+				tmpObj = new LargeDepositor();
+				while (line != "") // put each word in each own node
+				{
+					index = line.indexOf(" ");
+					if (index >= 0)
+					{
+						data = line.substring(0, index);
+					} 
+					else
+					{
+						data = line;
+						index = line.length();
+					}
+					ObjCharacteristics.addLast(data);
+					line = line.substring(index).trim();
+				}
+				tmpObj.setAFM(Integer.parseInt(ObjCharacteristics.removeFirst()));
+				tmpObj.setFirstName(ObjCharacteristics.removeFirst());
+				tmpObj.setLastName(ObjCharacteristics.removeFirst());
+				tmpObj.setSavings(Double.parseDouble(ObjCharacteristics.removeFirst()));
+				tmpObj.setTaxedIncome(Double.parseDouble(ObjCharacteristics.removeFirst()));
+				insert(tmpObj);
+				line = reader.readLine();
+			}
+			System.out.println("All data were read succesfully");
+			reader.close();
+		} 
+		catch (IOException e)
+		{
+			System.out.println("Error reading file...\nThe program will now exit");
+			System.exit(0);
+		}
+	}
+
+	public void updateSavings(int AFM, double savings)
+	{
+		LargeDepositor depositor = searchByAFM(AFM);
+		if (depositor != null)
+			depositor.setSavings(savings);
+	}
+
+	public LargeDepositor searchByAFM(int AFM)
+	{
+		return searchR(root, AFM);
+	}
+
+	// TODO make simple list
+	public List<LargeDepositor> searchByLastName(String last_name)
+	{
+		List<LargeDepositor> myList = new List<LargeDepositor>();
+		iterateforName(root, last_name, myList);
+		if (myList.size() > 0)
+		{
+			return myList;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	// implementation of idea of page 589 in main book
+	public void remove(int AFM)
+	{
+		if (root.item.key() == AFM)
+		{
+			root = removeR(root, AFM);
+		} 
+		else
+		{
+			LargeDepositor searchResult = searchByAFM(AFM);
+			if (searchResult != null)
+				root = removeR(root, AFM);
+			else 
+			{
+				System.out.println("not found");
+			}
+		}
+	}
+
+	private TreeNode removeR(TreeNode h, int v)
+	{
+		if (h == null)
+			return null;
+		int w = h.item.key();
+
+		// find value 'v' to delete
+		if (v < w)
+		{
+			h.left = removeR(h.left, v);
+			h.N--;// only to reduce size in removeR, not when calling join
+		}
+
+		else if (w < v)
+		{
+			h.right = removeR(h.right, v);
+			h.N--;// only to reduce size in removeR
+		}
+
+		/*
+		 * if found, join it's childrent and 'delete' it by replacing it with the result
+		 * of the join
+		 */
+		else
+			h = joinLR(h.left, h.right);
+
+		return h;
+	}
+
+	private TreeNode joinLR(TreeNode a, TreeNode b)
+	{
+		if (a == null)
+			return b;
+		if (b == null)
+			return a;
+
+		int N = a.N + b.N;
+		// make right child of a, the b nodeTree
+		if (Math.random() * N < 1.0 * a.N)
+		{
+			a.right = joinLR(a.right, b);
+			// fix in each recursion the new treeNode size
+			a.N = count(a.right)+count(a.left)+1;
+			return a;
+		}
+		// make left child of b, the a nodeTree
+		else
+		{
+			b.left = joinLR(a, b.left);
+			b.N = count(b.right)+count(b.left)+1;
+			return b;
+		}
+	}
+
+	public double getMeanSavings()
+	{
+		if(root==null) return 0;
+		return addSavingsR(root) / root.N;
+	}
+
+	double addSavingsR(TreeNode h)
+
+	{
+		if (h == null)
+			return 0;
+		double sum = addSavingsR(h.left);
+		sum += h.item.getSavings();
+		sum += addSavingsR(h.right);
+		return sum;
+	}
+		
+	public void printTopLargeDepositors(int k)
+	{
+		PQ topLargeDepositorsPQ = new PQ(k, PQ.Type.MIN);
+		createMinHeapR(root, topLargeDepositorsPQ, k);
+	
+		for (int i = 0; i < k; i++)
+		{
+			LargeDepositor pqElement= topLargeDepositorsPQ.getHead();	
+			System.out.println(pqElement.key());				
+		}
+	}
+	
+	private void createMinHeapR(TreeNode node,  PQ pq, int k)
+	{
+		if (node == null)
+			return;
+	
+		pq.insert(node.item);
+		//removes min element
+		if(pq.size()>k)
+		{
+			pq.getHead();
+		}
+	
+		createMinHeapR(node.left, pq, k);
+		createMinHeapR(node.right, pq, k);
+	}
+	
+	public void printByAFM()
+	{
+		recursiveInOrder(root);
+	}
+	
+	public static void main(String args[]) throws Exception
+	{
+		RandomizedBST symbolTable = new RandomizedBST();
+		// For testing purposes
+
+		symbolTable.load("Data.txt");
+		symbolTable.printByAFM();
+		Scanner on = new Scanner(System.in);
+		String option;
+		while (true)
+		{
+			printMenu();
+
+			option = on.nextLine();
+			if (option.equals("1"))
+			{
+				LargeDepositor tmp = new LargeDepositor();
+				System.out.println("AFM: ");
+				tmp.setAFM(Integer.parseInt(on.nextLine()));
+				System.out.println("First name: ");
+				tmp.setFirstName(on.nextLine());
+				System.out.println("Last name: ");
+				tmp.setLastName(on.nextLine());
+				System.out.println("Savings: ");
+				tmp.setSavings(Double.parseDouble(on.nextLine()));
+				System.out.println("Taxed income: ");
+				tmp.setTaxedIncome(Double.parseDouble(on.nextLine()));
+
+				symbolTable.insert(tmp);
             }
             else if (option.equals("2"))
             {
@@ -244,8 +462,8 @@ public class RandomizedBST implements TaxEvasionInterface
             }    
         }
 
-        on.close();
-    }
+		on.close();
+	}
 
     public static void printMenu()
     {
@@ -261,4 +479,5 @@ public class RandomizedBST implements TaxEvasionInterface
         System.out.println("9. Print Large Depositors in ascending order");
         System.out.println("0. Exit");
     }
+
 }

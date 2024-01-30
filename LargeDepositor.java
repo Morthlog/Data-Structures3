@@ -1,4 +1,4 @@
-public class LargeDepositor 
+public class LargeDepositor implements  Comparable
 {
     private int AFM; 
     private String firstName; 
@@ -63,4 +63,31 @@ public class LargeDepositor
         "\nSavings: " + savings +
         "\nTaxed Income: " + taxedIncome;
     }
+
+	@Override
+	public boolean CompareTo(LargeDepositor b)
+	{
+		if(this.getTaxedIncome()<8000 && b.getTaxedIncome()<8000)
+		{
+			//for consistent results
+			if(this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome())
+			{
+				return true;
+			}
+			else return false;
+		}
+		else if(this.getTaxedIncome()<8000 && b.getTaxedIncome()>8000)
+		{
+			return false;
+		}
+		
+		else if (this.getTaxedIncome()>8000 && b.getTaxedIncome()<8000) 
+		{
+			return true;
+		}
+		else if(this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome())
+			return true;
+		else return false;
+		
+	}
 }
