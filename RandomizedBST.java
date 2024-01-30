@@ -1,9 +1,11 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
 import java.util.Scanner;
-
-import javax.swing.tree.FixedHeightLayoutCache;
+import java.util.Set;
 
 public class RandomizedBST implements TaxEvasionInterface
 {
@@ -119,12 +121,10 @@ public class RandomizedBST implements TaxEvasionInterface
 		{
 			System.out.println("Depositor already exists.");
 			return h;
-		} 
-		else if (item.key() < h.item.key())
+		} else if (item.key() < h.item.key())
 		{
 			h.left = insertR(item, h.left);
-		} 
-		else
+		} else
 		{
 			h.right = insertR(item, h.right);
 		}
@@ -224,7 +224,7 @@ public class RandomizedBST implements TaxEvasionInterface
 		if (myList.size() > 0)
 		{
 			return myList;
-		} 
+		}
 		else
 		{
 			return null;
@@ -236,6 +236,8 @@ public class RandomizedBST implements TaxEvasionInterface
 	{
 		if (root.item.key() == AFM)
 		{
+//			root = joinLR(root.left, root.right);
+//			root.N = count(root.right)+count(root.left)+1;
 			root = removeR(root, AFM);
 		} 
 		else
@@ -243,6 +245,10 @@ public class RandomizedBST implements TaxEvasionInterface
 			LargeDepositor searchResult = searchByAFM(AFM);
 			if (searchResult != null)
 				root = removeR(root, AFM);
+			else 
+			{
+				System.out.println("not found");
+			}
 		}
 
 	}
@@ -288,15 +294,17 @@ public class RandomizedBST implements TaxEvasionInterface
 		if (Math.random() * N < 1.0 * a.N)
 		{
 			a.right = joinLR(a.right, b);
-			//fix in each recursion the new treeNode size
-			a.N = a.right.N + 1;//new size is the new right + itself
+			// fix in each recursion the new treeNode size
+//			a.N =  a.right.N + 1;// new size is the right + itself
+			a.N = count(a.right)+count(a.left)+1;
 			return a;
 		}
 		// make left child of b, the a nodeTree
 		else
 		{
 			b.left = joinLR(a, b.left);
-			b.N = b.left.N + 1;//new size is the new left + itself
+//			b.N = b.left.N + 1;// new size is the new left + itself
+			b.N = count(b.right)+count(b.left)+1;
 			return b;
 		}
 
@@ -304,7 +312,17 @@ public class RandomizedBST implements TaxEvasionInterface
 
 	public double getMeanSavings()
 	{
-		return 0;
+		return addSavings(root) / root.N;
+	}
+
+	double addSavings(TreeNode h)
+	{
+		if (h == null)
+			return 0;
+		double sum = addSavings(h.left);
+		sum += h.item.getSavings();
+		sum += addSavings(h.right);
+		return sum;
 	}
 
 	public void printTopLargeDepositors(int k)
@@ -320,6 +338,7 @@ public class RandomizedBST implements TaxEvasionInterface
 	static LargeDepositor addNewDepositor(int value)
 	{
 		LargeDepositor tmp = new LargeDepositor();
+		tmp.setSavings(10);
 		tmp.setAFM(value);
 		return tmp;
 	}
@@ -356,23 +375,121 @@ public class RandomizedBST implements TaxEvasionInterface
 		}
 	}
 
-	public static void main(String args[])
+	
+	public int verifyCount(TreeNode node) throws Exception 
 	{
-		RandomizedBST symbolTable = new RandomizedBST();
+	    if (node == null) 
+	    {
+	        return 0; // Base case: if the node is null, there are no nodes to count
+	    }
 
-		symbolTable.insert(addNewDepositor(5));
-		symbolTable.insert(addNewDepositor(3));
-		symbolTable.insert(addNewDepositor(4));
-		symbolTable.insert(addNewDepositor(2));
-		symbolTable.insert(addNewDepositor(6));
-		symbolTable.insert(addNewDepositor(1));
-		symbolTable.insert(addNewDepositor(7));
+	    // Recursively count nodes in the left and right subtrees
+	    int leftCount = verifyCount(node.left);
+	    int rightCount = verifyCount(node.right);
+	    
+	    if(node.left!=null)
+	    {
+	    	if(leftCount!=node.left.N)
+		    {
+		    	throw new Exception("left child");
+		    }
+		    else 
+		    {
+//		    	System.out.println("leftCount= "+leftCount+", node.left.N= "+ node.left.N );
+			}
+	    }
+	    
+	    
+	    if(node.right!=null)
+	    {
+	    	if(rightCount!=node.right.N)
+		    {
+		    	throw new Exception("right child");
+		    }
+		    else {
+//		    	System.out.println("rightCount= "+rightCount+", node.right.N= "+ node.right.N );
+			}
+	    }
+	    
+	    // Return the total count, including the current node
+	    int parentCount=leftCount + rightCount + 1;
+	    if(parentCount!=node.N)
+	    {
+	    	throw new Exception("parent");
+	    }
+	    else {
+//	    	System.out.println("parentCount= "+parentCount+", nodeN= "+ node.N );
+		}
+	    
+	    return parentCount;
+	}
 
-//		symbolTable.remove(3);
-		symbolTable.printTree(symbolTable.root, 0);
-//		System.out.println("N= " + symbolTable.root.N);
-		symbolTable.remove(3);
-		symbolTable.printTree(symbolTable.root, 0);
+	public  ArrayList<LargeDepositor> generateRandomDepositors()
+	{
+		ArrayList<LargeDepositor> depositors = new ArrayList<LargeDepositor>();
+		Set<Integer> usedAFMs = new HashSet<>();
+
+		Random random = new Random();
+
+		for (int i = 0; i < 1000; i++)
+		{
+			LargeDepositor depositor = new LargeDepositor();
+
+
+			int afm;
+			do
+			{
+				afm = random.nextInt(1000000000); 
+			} 
+			while (usedAFMs.contains(afm));
+
+			depositor.setAFM(afm);
+			usedAFMs.add(afm);
+
+			// Generate random values for other attributes
+			depositor.setFirstName("FirstName" + i);
+			depositor.setLastName("LastName" + i);
+			depositor.setSavings(random.nextDouble() * 100000); 
+			depositor.setTaxedIncome(random.nextDouble() * 100000); 
+
+			depositors.add(depositor);
+		}
+
+		return depositors;
+	}
+
+	public static void main(String args[]) throws Exception
+	{
+		
+		Random random = new Random();        
+        for(int i=0; i<=1000;i++)
+        {
+        	RandomizedBST symbolTable = new RandomizedBST();
+
+    		ArrayList<LargeDepositor> randomDepositors = symbolTable.generateRandomDepositors();
+    		for (LargeDepositor depositor : randomDepositors) 
+            {
+            	symbolTable.insert(depositor);
+            }
+    		
+    		 LargeDepositor[] depositorArray = randomDepositors.toArray(new LargeDepositor[randomDepositors.size()]);
+   
+//    		 System.out.println("\nBEFORE: ");
+//    		 symbolTable.printTree(symbolTable.root, 0);
+    		
+    		 symbolTable.remove(symbolTable.root.item.key());
+    		 symbolTable.remove(depositorArray[random.nextInt(randomDepositors.size())].key());
+    		 symbolTable.remove(depositorArray[random.nextInt(randomDepositors.size())].key());
+    		 symbolTable.remove(symbolTable.root.item.key());
+    		 
+//    		 System.out.println("\nAFTER");
+//    		 symbolTable.printTree(symbolTable.root, 0);
+    
+    		 
+    		 symbolTable.verifyCount(symbolTable.root);   		 
+        }
+        System.out.println("completed");
+
 //		RandomizedBST symbolTable = new RandomizedBST();
 //		// For testing purposes
 //
