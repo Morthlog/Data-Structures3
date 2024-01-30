@@ -400,7 +400,7 @@ public class RandomizedBST implements TaxEvasionInterface
 			depositor.setFirstName("FirstName" + i);
 			depositor.setLastName("LastName" + i);
 			depositor.setSavings(random.nextDouble() * 1000); 
-			depositor.setTaxedIncome(/*random.nextDouble() * 10000*/9000); 
+			depositor.setTaxedIncome(/*random.nextDouble() * 10000*/5000); 
 			depositors.add(depositor);
 		}
 
