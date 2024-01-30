@@ -115,8 +115,17 @@ public class LargeDepositor implements  Comparator<LargeDepositor>,Comparable
 		{
 			return 1;
 		}
+		//the result ranges from negative numbers(when taxed>savings) least suspect, to positive most suspect
 		else if(o1.getSavings() - o1.getTaxedIncome() < o2.getSavings() - o2.getTaxedIncome())
 			return 1;
 		else return -1;
 	}
+//	public int compare(LargeDepositor o1, LargeDepositor o2)
+//	{
+//
+//		if(o1.getSavings() - o1.getTaxedIncome() < o2.getSavings() - o2.getTaxedIncome())
+//			return 1;
+//		else return -1;
+//
+//	}
 }
