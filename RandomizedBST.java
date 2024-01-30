@@ -26,7 +26,7 @@ public class RandomizedBST implements TaxEvasionInterface
     {
         if (node == null)
             return;
-        if (node.item.getLastName() == last_name)
+        if (node.item.getLastName().equals(last_name))
         {
             myList.insertAtBack(node.item);
         }
@@ -202,10 +202,17 @@ public class RandomizedBST implements TaxEvasionInterface
                 System.out.println("Last name: ");
                 String name = on.nextLine();
                 List<LargeDepositor> myList = symbolTable.searchByLastName(name);
-                if (myList.size()<=5)
-                {
-                    System.out.println(myList);
-                }
+				if (myList!=null)
+				{
+					if (myList.size()<=5)
+					{
+						System.out.println(myList);
+					}
+				}
+                else
+				{
+					System.out.println("Last name was not found");
+				}
             }
             else if (option.equals("6"))
             {
@@ -242,7 +249,7 @@ public class RandomizedBST implements TaxEvasionInterface
 
     public static void printMenu()
     {
-        System.out.println("What would you like to do?");
+        System.out.println("\nWhat would you like to do?");
         System.out.println("1. Insert a new Large Depositor");
         System.out.println("2. Load Large Depositor from file");
         System.out.println("3. Update savings of a Large Depositor");
