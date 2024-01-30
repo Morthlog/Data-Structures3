@@ -2,6 +2,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
@@ -231,13 +233,11 @@ public class RandomizedBST implements TaxEvasionInterface
 		}
 	}
 
-	// implementation of page 589 in main book
+	// implementation of idea of page 589 in main book
 	public void remove(int AFM)
 	{
 		if (root.item.key() == AFM)
 		{
-//			root = joinLR(root.left, root.right);
-//			root.N = count(root.right)+count(root.left)+1;
 			root = removeR(root, AFM);
 		} 
 		else
@@ -295,7 +295,6 @@ public class RandomizedBST implements TaxEvasionInterface
 		{
 			a.right = joinLR(a.right, b);
 			// fix in each recursion the new treeNode size
-//			a.N =  a.right.N + 1;// new size is the right + itself
 			a.N = count(a.right)+count(a.left)+1;
 			return a;
 		}
@@ -303,7 +302,6 @@ public class RandomizedBST implements TaxEvasionInterface
 		else
 		{
 			b.left = joinLR(a, b.left);
-//			b.N = b.left.N + 1;// new size is the new left + itself
 			b.N = count(b.right)+count(b.left)+1;
 			return b;
 		}
@@ -312,6 +310,7 @@ public class RandomizedBST implements TaxEvasionInterface
 
 	public double getMeanSavings()
 	{
+		if(root==null) return 0;
 		return addSavings(root) / root.N;
 	}
 
@@ -324,17 +323,88 @@ public class RandomizedBST implements TaxEvasionInterface
 		sum += addSavings(h.right);
 		return sum;
 	}
-
-	public void printTopLargeDepositors(int k)
+	ArrayList<LargeDepositor> depositors= new ArrayList<LargeDepositor>();
+	public void printTopLargeDepositors(int k) throws Exception
 	{
-
+		PQ topLargeDepositorsPQ = new PQ(k, PQ.Type.MIN);
+		iterateforItem(root, topLargeDepositorsPQ, k);
+	
+		for (int i = 0; i < k; i++)
+		{
+			int pqElement= topLargeDepositorsPQ.getHead().key();	
+			int listElement=depositors.get(depositors.size()-1-i).key();
+			if(pqElement!=listElement)
+			{
+				throw new Exception("gamietai i print");
+			}
+			//System.out.println(depositors.get(depositors.size()-1-i).key()+" java list");	
+			//if
+			
+		}
+//		for (int i = k-1; i >= 0; i--)
+//		{
+//			System.out.println(depositors.get(i).key()+" java list");			
+//		}
 	}
-
+	
+	private void iterateforItem(TreeNode node,  PQ pq, int k)
+	{
+		if (node == null)
+			return;
+		
+		pq.insert(node.item);
+		depositors.add(node.item);
+		if(pq.size()>k)
+		{
+			pq.getHead();
+			LargeDepositor comparator = new LargeDepositor();
+			Collections.sort(depositors, comparator); //depositors.sort(comparator);
+			depositors.remove(depositors.size()-1);
+		}
+	
+		iterateforItem(node.left, pq, k);
+		iterateforItem(node.right, pq, k);
+	}
+	
 	public void printByAFM()
 	{
 		recursiveInOrder(root);
 	}
 
+	public  ArrayList<LargeDepositor> generateRandomDepositors()
+	{
+		ArrayList<LargeDepositor> depositors = new ArrayList<LargeDepositor>();
+		Set<Integer> usedAFMs = new HashSet<>();
+
+		Random random = new Random();
+
+		for (int i = 0; i < 100; i++)
+		{
+			LargeDepositor depositor = new LargeDepositor();
+			
+			int afm;
+			do
+			{
+				afm = random.nextInt(1000000000); 
+			} 
+			while (usedAFMs.contains(afm));
+
+			depositor.setAFM(afm);
+			usedAFMs.add(afm);
+
+			// Generate random values for other attributes
+			depositor.setFirstName("FirstName" + i);
+			depositor.setLastName("LastName" + i);
+			depositor.setSavings(random.nextDouble() * 100000); 
+			depositor.setTaxedIncome(random.nextDouble() * 100000); 
+
+			depositors.add(depositor);
+		}
+
+		return depositors;
+	}
+
+	///helper methods
 	static LargeDepositor addNewDepositor(int value)
 	{
 		LargeDepositor tmp = new LargeDepositor();
@@ -353,8 +423,8 @@ public class RandomizedBST implements TaxEvasionInterface
 		}
 
 		printIndent(depth);
-		System.out.println("Key: " + node.item.key() + ", N: " + node.N);
-
+		//System.out.println("Key: " + node.item.key() + ", N: " + node.N);
+		System.out.println("AFM: "+ node.item.key()+", Taxed income: " + node.item.getTaxedIncome() + ", difference: " + (node.item.getSavings() - node.item.getTaxedIncome()));
 		if (node.left != null || node.right != null)
 		{
 			printIndent(depth);
@@ -375,7 +445,6 @@ public class RandomizedBST implements TaxEvasionInterface
 		}
 	}
 
-	
 	public int verifyCount(TreeNode node) throws Exception 
 	{
 	    if (node == null) 
@@ -424,40 +493,7 @@ public class RandomizedBST implements TaxEvasionInterface
 	    return parentCount;
 	}
 
-	public  ArrayList<LargeDepositor> generateRandomDepositors()
-	{
-		ArrayList<LargeDepositor> depositors = new ArrayList<LargeDepositor>();
-		Set<Integer> usedAFMs = new HashSet<>();
-
-		Random random = new Random();
-
-		for (int i = 0; i < 1000; i++)
-		{
-			LargeDepositor depositor = new LargeDepositor();
-
-
-			int afm;
-			do
-			{
-				afm = random.nextInt(1000000000); 
-			} 
-			while (usedAFMs.contains(afm));
-
-			depositor.setAFM(afm);
-			usedAFMs.add(afm);
-
-			// Generate random values for other attributes
-			depositor.setFirstName("FirstName" + i);
-			depositor.setLastName("LastName" + i);
-			depositor.setSavings(random.nextDouble() * 100000); 
-			depositor.setTaxedIncome(random.nextDouble() * 100000); 
-
-			depositors.add(depositor);
-		}
-
-		return depositors;
-	}
-
+	
 	public static void main(String args[]) throws Exception
 	{
 		
@@ -486,10 +522,67 @@ public class RandomizedBST implements TaxEvasionInterface
 //    		 symbolTable.printTree(symbolTable.root, 0);
     
     		 
-    		 symbolTable.verifyCount(symbolTable.root);   		 
+    		 //symbolTable.verifyCount(symbolTable.root);   
+    		 symbolTable.printTopLargeDepositors(5);
         }
         System.out.println("completed");
-
+        
+//		RandomizedBST symbolTable = new RandomizedBST();
+//		LargeDepositor tmp = new LargeDepositor();
+//      
+//		tmp = new LargeDepositor();
+//        tmp.setAFM(6);
+//        tmp.setSavings(3000);
+//        tmp.setTaxedIncome(2000);
+//        symbolTable.insert(tmp);
+//        
+//        tmp = new LargeDepositor();
+//        tmp.setAFM(2);
+//        tmp.setSavings(4000);
+//        tmp.setTaxedIncome(8500);
+//        symbolTable.insert(tmp);
+//        
+//        tmp = new LargeDepositor();
+//        tmp.setAFM(3);
+//        tmp.setSavings(5000);
+//        tmp.setTaxedIncome(9000);
+//        symbolTable.insert(tmp);
+//        
+//        tmp = new LargeDepositor();
+//        tmp.setAFM(4);
+//        tmp.setSavings(5000);
+//        tmp.setTaxedIncome(9800);
+//        symbolTable.insert(tmp);
+//        
+//        tmp = new LargeDepositor();
+//        tmp.setAFM(5);
+//        tmp.setSavings(5000);
+//        tmp.setTaxedIncome(10000);
+//        symbolTable.insert(tmp);
+//        
+//        tmp = new LargeDepositor();
+//        tmp.setAFM(0);
+//        tmp.setSavings(5000);
+//        tmp.setTaxedIncome(1000);
+//        symbolTable.insert(tmp);
+//        
+//        tmp = new LargeDepositor();
+//        tmp.setAFM(1);
+//        tmp.setSavings(5000);
+//        tmp.setTaxedIncome(1500);
+//        symbolTable.insert(tmp);
+//        
+//        tmp = new LargeDepositor();
+//        tmp.setAFM(7);
+//        tmp.setSavings(8000);
+//        tmp.setTaxedIncome(15000);
+//        symbolTable.insert(tmp);
+//        
+//        
+//        symbolTable.verifyCount(symbolTable.root);   
+//		 symbolTable.printTopLargeDepositors(3);
+//		 symbolTable.printTree(symbolTable.root, 0);
+		
 //		RandomizedBST symbolTable = new RandomizedBST();
 //		// For testing purposes
 //

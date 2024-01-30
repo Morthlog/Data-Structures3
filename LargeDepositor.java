@@ -1,4 +1,6 @@
-public class LargeDepositor 
+import java.util.Comparator;
+
+public class LargeDepositor implements  Comparator<LargeDepositor>,Comparable
 {
     private int AFM; 
     private String firstName; 
@@ -63,4 +65,58 @@ public class LargeDepositor
         "\nSavings: " + savings +
         "\nTaxed Income: " + taxedIncome;
     }
+
+	@Override
+	public boolean CompareTo(LargeDepositor b)
+	{
+		if(this.getTaxedIncome()<8000 && b.getTaxedIncome()<8000)
+		{
+			//for consistent results
+			if(this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome())
+			{
+				return true;
+			}
+			else return false;
+		}
+		else if(this.getTaxedIncome()<8000 && b.getTaxedIncome()>8000)
+		{
+			return false;
+		}
+		
+		else if (this.getTaxedIncome()>8000 && b.getTaxedIncome()<8000) 
+		{
+			return true;
+		}
+		else if(this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome())
+			return true;
+		else return false;
+		
+	}
+
+
+	@Override
+	public int compare(LargeDepositor o1, LargeDepositor o2)
+	{
+		if(o1.getTaxedIncome()<8000 && o2.getTaxedIncome()<8000)
+		{
+			//for consistent results
+			if(o1.getSavings() - o1.getTaxedIncome() < o2.getSavings() - o2.getTaxedIncome())
+			{
+				return 1;
+			}
+			else return -1;
+		}
+		else if(o1.getTaxedIncome()<8000 && o2.getTaxedIncome()>8000)
+		{
+			return -1;
+		}
+		
+		else if (o1.getTaxedIncome()>8000 && o2.getTaxedIncome()<8000) 
+		{
+			return 1;
+		}
+		else if(o1.getSavings() - o1.getTaxedIncome() < o2.getSavings() - o2.getTaxedIncome())
+			return 1;
+		else return -1;
+	}
 }

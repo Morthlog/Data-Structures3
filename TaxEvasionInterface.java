@@ -7,6 +7,6 @@ public interface TaxEvasionInterface
     public List<LargeDepositor> searchByLastName(String last_name);
     public void remove(int AFM);
     public double getMeanSavings();
-    public void printTopLargeDepositors(int k);
+    public void printTopLargeDepositors(int k) throws Exception;
     public void printByAFM();
 }
