@@ -170,7 +170,7 @@ public class RandomizedBST implements TaxEvasionInterface
 		try
 		{
 			reader = new BufferedReader(new FileReader(filename));
-			System.out.println("Reading cities' data from file...");
+			System.out.println("Reading depositors data from file...");
 			line = reader.readLine();
 			while (line != null)
 			{
@@ -236,20 +236,14 @@ public class RandomizedBST implements TaxEvasionInterface
 	// implementation of idea of page 589 in main book
 	public void remove(int AFM)
 	{
-		if (root.item.key() == AFM)
-		{
+		LargeDepositor searchResult = searchByAFM(AFM);
+		if (searchResult != null)
 			root = removeR(root, AFM);
-		} 
-		else
+		else 
 		{
-			LargeDepositor searchResult = searchByAFM(AFM);
-			if (searchResult != null)
-				root = removeR(root, AFM);
-			else 
-			{
-				System.out.println("not found");
-			}
+			System.out.println("not found");
 		}
+		
 	}
 
 	private TreeNode removeR(TreeNode h, int v)
@@ -313,7 +307,6 @@ public class RandomizedBST implements TaxEvasionInterface
 	}
 
 	double addSavingsR(TreeNode h)
-
 	{
 		if (h == null)
 			return 0;
