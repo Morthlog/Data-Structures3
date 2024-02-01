@@ -322,7 +322,7 @@ public class RandomizedBST implements TaxEvasionInterface
 		for (int i = 0; i < k; i++)
 		{
 			LargeDepositor pqElement= topLargeDepositorsPQ.getHead();	
-			System.out.println("\n" + i + ": " + pqElement);
+			System.out.println("\n" + (i+1) + ": " + pqElement);
 			System.out.println("------------------------------");			
 		}
 	}
@@ -427,7 +427,7 @@ public class RandomizedBST implements TaxEvasionInterface
             }
             else if (option.equals("8"))
             {
-                System.out.print("top k Large Depositors: ");
+                System.out.print("Top k Large Depositors: ");
                 int k = Integer.parseInt(on.nextLine());
                 symbolTable.printTopLargeDepositors(k);
             }
