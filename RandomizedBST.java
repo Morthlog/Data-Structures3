@@ -19,7 +19,6 @@ public class RandomizedBST implements TaxEvasionInterface
 		}
 	}
 
-
 	private TreeNode root;
 
     private void iterateforName(TreeNode node, String last_name, List<LargeDepositor> myList)
@@ -216,7 +215,10 @@ public class RandomizedBST implements TaxEvasionInterface
 
 	public LargeDepositor searchByAFM(int AFM)
 	{
-		return searchR(root, AFM);
+		LargeDepositor searchResult = searchR(root, AFM);
+		if(searchResult==null)
+			System.out.println("Depositor not found");
+		return searchResult;
 	}
 
 	public List<LargeDepositor> searchByLastName(String last_name)
@@ -238,12 +240,7 @@ public class RandomizedBST implements TaxEvasionInterface
 	{
 		LargeDepositor searchResult = searchByAFM(AFM);
 		if (searchResult != null)
-			root = removeR(root, AFM);
-		else 
-		{
-			System.out.println("not found");
-		}
-		
+			root = removeR(root, AFM);		
 	}
 
 	private TreeNode removeR(TreeNode h, int v)
@@ -306,7 +303,7 @@ public class RandomizedBST implements TaxEvasionInterface
 		return addSavingsR(root) / root.N;
 	}
 
-	double addSavingsR(TreeNode h)
+	private double addSavingsR(TreeNode h)
 	{
 		if (h == null)
 			return 0;
@@ -397,10 +394,6 @@ public class RandomizedBST implements TaxEvasionInterface
                 if (result!= null)
                 {
                     System.out.println("Large Depositor's data: \n" + result);
-                }
-                else
-                {
-                    System.out.println("AFM was not found");
                 }
             }
             else if (option.equals("5"))

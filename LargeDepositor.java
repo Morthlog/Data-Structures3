@@ -71,24 +71,19 @@ public class LargeDepositor implements  Comparable
 		if(this.getTaxedIncome()<8000 && b.getTaxedIncome()<8000)
 		{
 			//for consistent results
-			if(this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome())
-			{
-				return true;
-			}
-			else return false;
+			return this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome();
 		}
-		else if(this.getTaxedIncome()<8000 && b.getTaxedIncome()>8000)
+		else if(this.getTaxedIncome()<8000 && b.getTaxedIncome()>=8000)
 		{
 			return false;
 		}
 		
-		else if (this.getTaxedIncome()>8000 && b.getTaxedIncome()<8000) 
+		else if (this.getTaxedIncome()>=8000 && b.getTaxedIncome()<8000) 
 		{
 			return true;
 		}
-		else if(this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome())
-			return true;
-		else return false;
+		else 
+			return this.getSavings() - this.getTaxedIncome() < b.getSavings() - b.getTaxedIncome();
 		
 	}
 }
