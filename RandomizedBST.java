@@ -317,7 +317,8 @@ public class RandomizedBST implements TaxEvasionInterface
 	{
 		PQ topLargeDepositorsPQ = new PQ(k, PQ.Type.MIN);
 		createMinHeapR(root, topLargeDepositorsPQ, k);
-	
+		if(topLargeDepositorsPQ.isEmpty()) return;
+		
 		for (int i = 0; i < k; i++)
 		{
 			LargeDepositor pqElement= topLargeDepositorsPQ.getHead();	
