@@ -1,5 +1,5 @@
 # Data structures 3rd assignment
-The goal of this project was to implement a **symbol table** using our **randomized Binary Search Tree (BST)** implementation in order to efficiently manage and analyze financial records of potential tax evaders. We were allowed to use **only** our own data structures implementations, except for arrays, the .io library and .util.Scanner to read files and user input and Exceptions. It was developed during the 3rd semester as part of the Data Structures course at AUEB.
+The goal of this project was to implement a **symbol table** using our own **randomized Binary Search Tree (BST)** implementation in order to efficiently manage and analyze financial records of potential tax evaders. We were allowed to use **only** our own data structures implementations, except for arrays, the .io library and .util.Scanner to read files and user input and Exceptions. It was developed during the 3rd semester as part of the Data Structures course at AUEB.
 
 
 ## Tasks
@@ -18,7 +18,7 @@ We were tasked with implementing the following:
 ### Prerequisites
 * Your machine must be able to compile at least java 8
 
-### Common steps
+### Steps
 * Download the repository
   
 * Fill [Data.txt](Data.txt) with your data in the format:
@@ -26,8 +26,7 @@ We were tasked with implementing the following:
     * AFM is a unique identifier of the entity 
 * Open command line on the repository root directory and type: `javac *.java`
 
-### Run the programm
-`java RandomizedBST`
+* Then `java RandomizedBST` to start it
 
 A menu will appear afterwards with the options to:
 * Load data from file
