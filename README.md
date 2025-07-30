@@ -45,3 +45,6 @@ A menu will appear afterwards with the options to:
 <a href="https://github.com/Morthlog/Data-Structures2/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=Morthlog/Data-Structures2"/>
 </a>
+
+- [Babis Drosatos](https://github.com/BabisDros)
+- [Iosif Petroulakis](https://github.com/Morthlog)
